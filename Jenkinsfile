@@ -14,12 +14,12 @@ pipeline {
     parallel {
       stage('Deploy to Staging'){
         steps {
-          sh 'mvn clean package'
+          sh 'echo ${params.tomcat_dev}'
         }
       }
       stage('Deploy to Production'){
         steps {
-          sh 'mvn clean package'
+          sh 'echo ${params.tomcat_prod}'
         }
       }
     }
