@@ -1,40 +1,25 @@
 pipeline {
   agent any
-  tools {
-    maven 'localMaven'
-    jdk 'localJDK'
-  }
-  stages {
-    stage('Build'){
-      steps {
-        sh 'mvn clean package'
-      }
-      post {
-        success {
-          echo 'Now archiving'
-          archiveArtifacts artifacts: '**/target/*.war'
-        }
-      }
-    }
-    stage ('Deploy to Staging'){
-      steps {
-        build job: 'deploy-to-staging'
-      }
-    }
-    stage('Deploy to production'){
-      steps {
-        timeout(time:5, unit:'DAYS'){
-          input message:'Approve PRODUCTION Deployment?'
-        }
-        build job: 'deploy-to-prod'
-      }
-      post {
-        success {
-          echo 'Code deployed to Production'
-        }
 
-        failure {
-          echo 'Deployment failed'
+  parameters {
+    string(name: 'tomcat_dev', defaultValue: 'localhost:8080', description: 'Staging Server')
+    string(name: 'tomcat_prod', defaultValue: 'localhost:8090', description: 'Production Server')
+  }
+
+  triggers {
+    pollSCM('* * * * *')
+  }
+
+  stage ('Deployments') {
+    parallel {
+      stage('Deploy to Staging'){
+        steps {
+          sh 'mvn clean package'
+        }
+      }
+      stage('Deploy to Production'){
+        steps {
+          sh 'mvn clean package'
         }
       }
     }
