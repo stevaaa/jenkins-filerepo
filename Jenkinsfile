@@ -3,8 +3,8 @@ pipeline {
   stages{
     stage('Build'){
       steps{
-        bat 'mvn clean package'
-        bat 'docket build . -t tomcatwebapp:${env.BUILD_ID}'
+        sh 'mvn clean package'
+        sh 'docket build . -t tomcatwebapp:${env.BUILD_ID}'
       }
     }
   }
